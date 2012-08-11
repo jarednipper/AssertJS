@@ -45,7 +45,7 @@ Object.prototype.assertEquals = function (pass, message) {
     
     if(this.valueOf() !== pass) {
         throw new AssertError(
-            message + this + "!=" + pass
+            message + this + " != " + pass
         );
     }
 };
@@ -62,7 +62,7 @@ Object.prototype.assertGreaterThan = function (pass, message) {
     
     if(this.valueOf() <= pass) {
         throw new AssertError(
-            message + this + "<=" + pass
+            message + this + " <= " + pass
         );
     }
 };
@@ -79,7 +79,7 @@ Object.prototype.assertLessThan = function (pass, message) {
     
     if(this.valueOf() >= pass) {
         throw new AssertError(
-            message + this + ">=" + pass
+            message + this + " >= " + pass
         );
     }
 };
