@@ -2,15 +2,15 @@
  * AssertJS
  * A JavaScript unit testing library.
  * @author Dan Cobb
- * @version 0.2
+ * @version 0.2.5
  * 
  * @example
  *  user.setName("John Doe");
  *  var name = user.getName();
- *  name.assertEquals("John Doe", "John's Name Check");
+ *  AssertJS.equals(name, "John Doe", "getName/0 Test");
  * 
  * @example
- *  AssertJS.test(function () {
+ *  $A.test(function () {
  *      var volume = getVolume();
  *      volume.assertGreaterThan(0);
  *      volume.assertLessThan(100);
@@ -18,7 +18,7 @@
  * 
  * @example
  *  var shape = createShape();
- *  AssertJS.assert(function () {
+ *  $A.assert(function () {
  *      return (shape.color !== Color.GREEN);
  *  }, "Green shape found!");
  */
@@ -40,76 +40,43 @@ function AssertError(message) {
 
 
 /**
- * @param {Object} pass The object to deep compare to.
- * @param {String} [message] Error message to display.
- * @returns {Boolean} True if assertion passed.
- * @since v0.2
- */
-Object.prototype.assertEquals = function (pass, message) {
-    message = (message) ? ("[" + message + "] ") : "";
-    
-    var valA = JSON.stringify(this);
-    var valB = JSON.stringify(pass);
-    
-    return AssertJS.assert(
-        function () {
-            return (valA === valB);
-        },
-        message + this + " != " + pass,
-        this,
-        pass
-    );
-};
-
-
-/**
- * @param {Object} pass The object to compare to.
- * @param {String} [message] Error message to display.
- * @returns {Boolean} True if assertion passed.
- * @since v0.2
- */
-Object.prototype.assertGreaterThan = function (pass, message) {
-    message = (message) ? ("[" + message + "] ") : "";
-    var myVal = this;
-    
-    return AssertJS.assert(
-        function () {
-            return (myVal > pass);
-        },
-        message + this + " <= " + pass,
-        this
-    );
-};
-
-
-/**
- * @param {Object} pass The object to compare to.
- * @param {String} [message] Error message to display.
- * @returns {Boolean} True if assertion passed.
- * @since v0.2
- */
-Object.prototype.assertLessThan = function (pass, message) {
-    message = (message) ? ("[" + message + "] ") : "";
-    var myVal = this;
-    
-    return AssertJS.assert(
-        function () {
-            return (myVal < pass);
-        },
-        message + this + " >= " + pass,
-        this
-    );
-};
-
-
-/**
- * @namespace Holds advanced testing behaviors.
+ * @namespace Holds all testing behaviors.
+ * @since v0.2.5
  */
 var AssertJS = new function () {
     /**
      * @description True if an assertion failed during a test.
+     * @since v0.2
      */
     var testError = false;
+    
+    
+    /**
+     * @param {String} message Description of error.
+     * @param {Object} [found] Found value from test.
+     * @param {Object} [expected] Expected value of test.
+     * @since v0.2.5
+     */
+    var log = function (message, found, expected) {
+        // Message for found value.
+        if(found) {
+            found = JSON.stringify(found);
+            found = "\n\t   Found: " + found;
+        } else {
+            found = "";
+        }
+        // Message for expected value.
+        if(expected) {
+            expected = JSON.stringify(expected);
+            expected = "\n\tExpected: " + expected;
+        } else {
+            expected = "";
+        }
+        
+        testError = true;
+        console.log("AssertError: " + message + found + expected);
+    };
+    
     
     return {
         /**
@@ -124,10 +91,75 @@ var AssertJS = new function () {
             if(compare()) {
                 return true;
             } else {
-                AssertJS.log(message, found, expected);
+                log(message, found, expected);
                 return false;
             }
         },
+        
+        
+        /**
+         * @param {Object} test The object under test.
+         * @param {Object} pass The object to deep compare to.
+         * @param {String} [message] Error message to display.
+         * @returns {Boolean} True if assertion passed.
+         * @since v0.2.5
+         */
+        equals: function (test, pass, message) {
+            message = (message) ? ("[" + message + "] ") : "";
+            
+            var valA = JSON.stringify(test);
+            var valB = JSON.stringify(pass);
+            
+            return AssertJS.assert(
+                function () {
+                    return (valA === valB);
+                },
+                message + test + " != " + pass,
+                test,
+                pass
+            );
+        },
+        
+        
+        /**
+         * @param {Object} test The object under test.
+         * @param {Object} pass The object to compare to.
+         * @param {String} [message] Error message to display.
+         * @returns {Boolean} True if assertion passed.
+         * @since v0.2.5
+         */
+        greaterThan: function (test, pass, message) {
+            message = (message) ? ("[" + message + "] ") : "";
+            
+            return AssertJS.assert(
+                function () {
+                    return (test > pass);
+                },
+                message + test + " <= " + pass,
+                test
+            );
+        },
+        
+        
+        /**
+         * @param {Object} test The object under test.
+         * @param {Object} pass The object to compare to.
+         * @param {String} [message] Error message to display.
+         * @returns {Boolean} True if assertion passed.
+         * @since v0.2.5
+         */
+        lessThan: function (test, pass, message) {
+            message = (message) ? ("[" + message + "] ") : "";
+            
+            return AssertJS.assert(
+                function () {
+                    return (test < pass);
+                },
+                message + test + " >= " + pass,
+                test
+            );
+        },
+        
         
         /**
          * @description A test is an atom of assertions to run to
@@ -148,37 +180,16 @@ var AssertJS = new function () {
             if(testError) {
                 throw new AssertError(testName + " Failed");
             }
-        },
-        
-        /**
-         * @param {String} message Description of error.
-         * @param {Object} [found] Found value from test.
-         * @param {Object} [expected] Expected value of test.
-         * @since v0.2
-         */
-        log: function (message, found, expected) {
-            // Message for found value.
-            if(found) {
-                found = JSON.stringify(found);
-                found = "\n\t   Found: " + found;
-            } else {
-                found = "";
-            }
-            // Message for expected value.
-            if(expected) {
-                expected = JSON.stringify(expected);
-                expected = "\n\tExpected: " + expected;
-            } else {
-                expected = "";
-            }
-            
-            testError = true;
-            console.log("AssertError: " + message + found + expected);
         }
     };
 };
 
 
+/**
+ * @description Shortcut for AssertJS.
+ * @since v0.2.5
+ */
+var $A = AssertJS;
 
 
 
