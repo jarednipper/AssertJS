@@ -143,7 +143,6 @@ var AssertJS = new function () {
             testError = false;
             
             // Run the series of assertions.
-            console.log("\n*** Running " + testName + " ***");
             assertions();
             
             if(testError) {
