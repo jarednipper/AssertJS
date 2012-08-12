@@ -2,18 +2,18 @@
  * AssertJS
  * A JavaScript unit testing library.
  * @author Dan Cobb
- * @version 0.2.5
+ * @version 0.3
  * 
  * @example
  *  user.setName("John Doe");
  *  var name = user.getName();
- *  AssertJS.equals(name, "John Doe", "getName/0 Test");
+ *  AssertJS.isEqual(name, "John Doe", "getName/0 Test");
  * 
  * @example
  *  $A.test(function () {
  *      var volume = getVolume();
- *      volume.assertGreaterThan(0);
- *      volume.assertLessThan(100);
+ *      $A.isGreater(volume, 0);
+ *      $A.isLess(volume, 100);
  *  }, "Volume Test");
  * 
  * @example
@@ -102,9 +102,9 @@ var AssertJS = new function () {
          * @param {Object} pass The object to deep compare to.
          * @param {String} [message] Error message to display.
          * @returns {Boolean} True if assertion passed.
-         * @since v0.2.5
+         * @since v0.3
          */
-        equals: function (test, pass, message) {
+        isEqual: function (test, pass, message) {
             message = (message) ? ("[" + message + "] ") : "";
             
             var valA = JSON.stringify(test);
@@ -126,9 +126,9 @@ var AssertJS = new function () {
          * @param {Object} pass The object to compare to.
          * @param {String} [message] Error message to display.
          * @returns {Boolean} True if assertion passed.
-         * @since v0.2.5
+         * @since v0.3
          */
-        greaterThan: function (test, pass, message) {
+        isGreater: function (test, pass, message) {
             message = (message) ? ("[" + message + "] ") : "";
             
             return AssertJS.assert(
@@ -146,9 +146,9 @@ var AssertJS = new function () {
          * @param {Object} pass The object to compare to.
          * @param {String} [message] Error message to display.
          * @returns {Boolean} True if assertion passed.
-         * @since v0.2.5
+         * @since v0.3
          */
-        lessThan: function (test, pass, message) {
+        isLess: function (test, pass, message) {
             message = (message) ? ("[" + message + "] ") : "";
             
             return AssertJS.assert(
